@@ -163,6 +163,109 @@ export type Database = {
         Update: never
         Relationships: []
       }
+      resumes: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          file_path: string
+          file_url: string
+          mime_type: string
+          is_default: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          file_path: string
+          file_url: string
+          mime_type?: string
+          is_default?: boolean
+          created_at?: string
+        }
+        Update: {
+          name?: string
+          is_default?: boolean
+        }
+        Relationships: []
+      }
+      tailored_resumes: {
+        Row: {
+          id: string
+          application_id: string
+          source_resume_id: string | null
+          user_id: string
+          resume_json: Json | null
+          pdf_path: string | null
+          docx_path: string | null
+          pdf_url: string | null
+          docx_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          application_id: string
+          source_resume_id?: string | null
+          user_id: string
+          resume_json?: Json | null
+          pdf_path?: string | null
+          docx_path?: string | null
+          pdf_url?: string | null
+          docx_url?: string | null
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
+      cover_letters: {
+        Row: {
+          id: string
+          application_id: string
+          user_id: string
+          content: string
+          pdf_path: string | null
+          docx_path: string | null
+          pdf_url: string | null
+          docx_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          application_id: string
+          user_id: string
+          content: string
+          pdf_path?: string | null
+          docx_path?: string | null
+          pdf_url?: string | null
+          docx_url?: string | null
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
+      api_usage_logs: {
+        Row: {
+          id: string
+          user_id: string | null
+          action_type: 'jd_parse' | 'resume_tailor' | 'cover_letter' | 'chat'
+          input_tokens: number | null
+          output_tokens: number | null
+          model: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          action_type: 'jd_parse' | 'resume_tailor' | 'cover_letter' | 'chat'
+          input_tokens?: number | null
+          output_tokens?: number | null
+          model?: string | null
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
     }
     Views: { [_ in never]: never }
     Functions: { [_ in never]: never }
@@ -176,3 +279,7 @@ export type TailoringUsage = Database['public']['Tables']['tailoring_usage']['Ro
 export type JobApplication = Database['public']['Tables']['job_applications']['Row']
 export type ApplicationNote = Database['public']['Tables']['application_notes']['Row']
 export type FetchLog = Database['public']['Tables']['fetch_logs']['Row']
+export type Resume = Database['public']['Tables']['resumes']['Row']
+export type TailoredResume = Database['public']['Tables']['tailored_resumes']['Row']
+export type CoverLetter = Database['public']['Tables']['cover_letters']['Row']
+export type ApiUsageLog = Database['public']['Tables']['api_usage_logs']['Row']

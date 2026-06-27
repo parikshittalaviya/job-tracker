@@ -13,7 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { StatusBadge, ALL_STATUSES, statusLabel } from './status-badge'
-import type { JobApplication, ApplicationNote, AppStatus, WorkType } from '@/types/database'
+import { TailorTab } from './tailor-tab'
+import type { JobApplication, ApplicationNote, AppStatus, WorkType, Resume } from '@/types/database'
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -63,9 +64,15 @@ function appToEditFields(app: JobApplication): EditFields {
 export function ApplicationDetail({
   app: initial,
   notes: initialNotes,
+  resumes,
+  dailyUsed,
+  dailyLimit,
 }: {
   app: JobApplication
   notes: ApplicationNote[]
+  resumes: Resume[]
+  dailyUsed: number
+  dailyLimit: number
 }) {
   const router = useRouter()
   const [app, setApp] = useState(initial)
@@ -264,6 +271,7 @@ export function ApplicationDetail({
       <Tabs defaultValue="details">
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="resume">Resume & Cover Letter</TabsTrigger>
           <TabsTrigger value="notes">Notes {notes.length > 0 && `(${notes.length})`}</TabsTrigger>
           <TabsTrigger value="jd">Job Description</TabsTrigger>
         </TabsList>
@@ -431,6 +439,16 @@ export function ApplicationDetail({
               </CardContent>
             )}
           </Card>
+        </TabsContent>
+
+        {/* Resume & Cover Letter tab */}
+        <TabsContent value="resume" className="mt-4">
+          <TailorTab
+            applicationId={app.id}
+            resumes={resumes}
+            dailyUsed={dailyUsed}
+            dailyLimit={dailyLimit}
+          />
         </TabsContent>
 
         {/* Notes tab */}
