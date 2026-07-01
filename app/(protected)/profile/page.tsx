@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProfileForm } from '@/components/profile/profile-form'
+import { ResumeManager } from '@/components/profile/resume-manager'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import type { Resume } from '@/types/database'
 
 export const metadata = { title: 'Profile & Settings — Job Tracker' }
 
@@ -17,15 +19,23 @@ export default async function ProfilePage() {
     .eq('id', user.id)
     .single()
 
-  const { data: usage } = await supabase
-    .from('tailoring_usage')
-    .select('count')
-    .eq('user_id', user.id)
-    .eq('usage_date', new Date().toISOString().split('T')[0])
-    .single()
+  const [{ data: usage }, { data: resumeData }] = await Promise.all([
+    supabase
+      .from('tailoring_usage')
+      .select('count')
+      .eq('user_id', user.id)
+      .eq('usage_date', new Date().toISOString().split('T')[0])
+      .single(),
+    supabase
+      .from('resumes')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+  ])
 
   const todayCount = usage?.count ?? 0
   const hasOwnKey = !!profile?.anthropic_key
+  const resumes = (resumeData ?? []) as Resume[]
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -49,6 +59,21 @@ export default async function ProfilePage() {
             todayCount={todayCount}
             hasOwnKey={hasOwnKey}
           />
+        </CardContent>
+      </Card>
+
+      <Separator />
+
+      {/* Resume Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Resume Management</CardTitle>
+          <CardDescription>
+            Upload your resumes here. The default resume is pre-selected when tailoring a new application.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResumeManager initialResumes={resumes} />
         </CardContent>
       </Card>
 
